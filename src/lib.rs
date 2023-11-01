@@ -188,7 +188,10 @@ impl EventHub {
 
     /// Async version of [`poll_event`](Self::poll_event)
     pub async fn poll_async(&self) -> Event {
-        self.rx.recv_async().await.expect("Parent thread is dead")
+        self.rx
+            .recv_async()
+            .await
+            .unwrap_or(Event::Message(0, Message::Text("shut me down".to_string())))
     }
 
     /// Returns true if there are currently no events in the queue.
@@ -245,6 +248,10 @@ fn start_runtime(
             let tokio_listener = TcpListener::from_std(listener).unwrap();
             let mut current_id: u64 = 0;
             loop {
+                if current_id == 10 {
+                    println!("stopping listening on port");
+                    break Ok(());
+                }
                 match tokio_listener.accept().await {
                     Ok((stream, _)) => {
                         tokio::spawn(handle_connection(stream, event_tx.clone(), current_id));
