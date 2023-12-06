@@ -248,7 +248,7 @@ fn start_runtime(
             let tokio_listener = TcpListener::from_std(listener).unwrap();
             let mut current_id: u64 = 0;
             loop {
-                if current_id == 10 {
+                if current_id == 15 {
                     println!("stopping listening on port");
                     break Ok(());
                 }
